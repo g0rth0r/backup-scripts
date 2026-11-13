@@ -132,3 +132,10 @@ echo "OK: $total_ok  CHANGED: $total_changed  NOCHANGE: $total_nochange  ERR: $t
 gzip -f "$RUN_LOG"
 echo "Log: $RUN_LOG"
 echo "CSV: $SUMMARY_CSV"
+
+if (( total_err > 0 )); then
+  echo "ERROR: $total_err directory backup(s) failed" >&2
+  exit 1
+fi
+
+exit 0
