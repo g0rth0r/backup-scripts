@@ -46,6 +46,27 @@ SRC_LABEL="$(basename "$(dirname "$SOURCE")")"
 [[ -d "$DEST" ]]     || { echo "ERROR: DEST not found: $DEST" >&2; exit 2; }
 [[ -f "$DIR_LIST" ]] || { echo "ERROR: DIR_LIST not found: $DIR_LIST" >&2; exit 2; }
 
+# ---- resolve and validate backup selection ----------------------------------
+# Fail before starting rsync if the selection or an include is invalid.
+RESOLVER="$(dirname -- "${BASH_SOURCE[0]}")/expand-backup-list.py"
+[[ -f "$RESOLVER" ]] || {
+  echo "ERROR: Backup list resolver missing: $RESOLVER" >&2
+  exit 2
+}
+
+EXPANDED_LIST="$(mktemp)" || exit 2
+trap 'rm -f "$EXPANDED_LIST"' EXIT
+
+if ! python3 "$RESOLVER" "$DIR_LIST" > "$EXPANDED_LIST"; then
+  echo "ERROR: Backup list expansion failed" >&2
+  exit 2
+fi
+
+[[ -s "$EXPANDED_LIST" ]] || {
+  echo "ERROR: Resolved backup list is empty" >&2
+  exit 2
+}
+
 # ---- logging setup ----------------------------------------------------------
 STAMP="$(date +%F_%H-%M-%S)"
 LOGDIR="/mnt/backup8/logs"
@@ -125,7 +146,7 @@ while IFS= read -r raw || [[ -n "$raw" ]]; do
 
   cat "$tmp" >> "$RUN_LOG"
   rm -f "$tmp"
-done < "$DIR_LIST"
+done < "$EXPANDED_LIST"
 
 echo -e "\n=== Summary ==="                 | tee -a "$RUN_LOG"
 echo "OK: $total_ok  CHANGED: $total_changed  NOCHANGE: $total_nochange  ERR: $total_err" | tee -a "$RUN_LOG"
