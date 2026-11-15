@@ -1,0 +1,8 @@
+data/media-playback/plex/config/Library/Application Support/Plex Media Server/Cache
+data/media-playback/plex/config/Library/Application Support/Plex Media Server/Metadata
+data/media-playback/plex/config/Library/Application Support/Plex Media Server/Media
+data/media-playback/plex/config/Library/Application Support/Plex Media Server/Logs
+data/media-playback/plex/config/Library/Application Support/Plex Media Server/Crash Reports
+data/media-playback/plex/config/Library/Application Support/Plex Media Server/Plug-in Support/Caches
+data/media-playback/plex/config/tmp/Transcode
+data/media-playback/tautulli/config/cache
